@@ -20,6 +20,6 @@ We provide a central operator UI, which we call the "Gardener". It talks to a de
 
 #### Overview Architecture Diagram
 
-![Missing](https://github.wdf.sap.corp/gardener/gardener-docs/raw/master/images/tam-block-diagram-overview.png)
+![Missing](https://github.com/gardener/gardener-docs/blob/master/images/tam-block-diagram-overview.png)
 
 Note: While the `kubelet` talks through the front-door (public Internet) to its "shoot" cluster API server running in the "seed" cluster, the pods inside the "shoot" cluster use the Kubernetes service and its load balancer IP to reach the API server. This communication and the reverse communication from the API server to the pod and service  IPs happens through a VPN connection that we deploy into "seed" and "shoot" clusters.
