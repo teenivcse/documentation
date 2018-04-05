@@ -10,12 +10,13 @@ While self-hosting, meaning to run Kubernetes components inside Kubernetes, is a
 
 #### Setting The Scene - Components and Procedure
 
-We provide a central operator UI, which we call the "Gardener". It talks to a dedicated cluster, which we call the "Garden" cluster and uses CRDs ([CustomResourceDefinitions](https://kubernetes.io/docs/concepts/api-extension/custom-resources/#customresourcedefinitions), the general extension concept of Kubernetes) to represent "shoot" clusters. In this "Garden" cluster runs the "Garden Operator", which is basically a Kubernetes controller that watches the CRDs and acts upon them, i.e. creates, updates/modifies, or deletes "shoot" clusters. The creation follows basically these steps:
+We provide a central operator UI, which we call the "Gardener Dashboard". It talks to a dedicated cluster, which we call the "Garden" cluster and uses custom resources managed by an [aggregated API server](https://kubernetes.io/docs/concepts/api-extension/custom-resources/#api-server-aggregation), one of the general extension concepts of Kubernetes) to represent "shoot" clusters. In this "Garden" cluster runs the "Gardener", which is basically a Kubernetes controller that watches the custom resources and acts upon them, i.e. creates, updates/modifies, or deletes "shoot" clusters. The creation follows basically these steps:
 * Create a namespace in the "seed" cluster for the "shoot" cluster which will host the "shoot" cluster control plane
 * Generate secrets and credentials which the worker nodes will need to talk to the control plane
-* Create the infrastructure (using [Terraform](https://www.terraform.io/)), which basically consists out of the network setup and the scaling group definition (including the cloud config, so that the IaaS can create the virtual machines headless whenever a node fails or new nodes are requested by the cluster auto-scaler)
-* Deploy the "shoot" cluster control plane into the "shoot" namespace in the "seed" cluster
-* Wait for the "shoot" cluster API server to become responsive (VMs will be automatically provisioned without our intervention, pods will be scheduled, persistent volumes and load balancers are created by Kubernetes via the respective cloud provider)
+* Create the infrastructure (using [Terraform](https://www.terraform.io/)), which basically consists out of the network setup)
+* Deploy the "shoot" cluster control plane into the "shoot" namespace in the "seed" cluster, containing the "machine-controller-manager" pod
+* Create machine CRDs in the "seed" cluster, describing the configuration and the number of worker machines for the "shoot" (the machine-controller-manager watches the CRDs and creates virtual machines out of it)
+* Wait for the "shoot" cluster API server to become responsive (pods will be scheduled, persistent volumes and load balancers are created by Kubernetes via the respective cloud provider)
 * Finally we deploy `kube-system` daemons like `kube-proxy` and further add-ons like the `dashboard` into the "shoot" cluster and the cluster becomes active
 
 #### Overview Architecture Diagram
